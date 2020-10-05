@@ -4,12 +4,14 @@ package com.example.mychats.Login_Or_SignUp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.mychats.MainActivity;
@@ -27,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText loginPassword, loginEmail;
     private Button loginButton, signUpButton;
     private String email, password;
+    private ProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +41,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 getDataFromEditText();  // get data from input fields
                 if( !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) ) {
+                    mProgressDialog.setTitle("Login progress..");
+                    mProgressDialog.setMessage("One moment please...");
+                    mProgressDialog.setCanceledOnTouchOutside(false);
+                    mProgressDialog.show();
+
                     login(view);
                 }
                 else{
@@ -63,11 +71,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void init(){
+
         mAuth = FirebaseAuth.getInstance();
         loginEmail = findViewById(R.id.login_email_id);
         loginPassword = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button1);
         signUpButton = findViewById(R.id.signup_button1);
+
+        mProgressDialog = new ProgressDialog(this);
     }
 
     public void login(final View view){
@@ -75,12 +86,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+                    mProgressDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Login Success",Toast.LENGTH_LONG).show();
                     Intent main = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(main);
                     finish();
                 }
                 else{
+                    mProgressDialog.hide();
                     task.addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {

@@ -3,6 +3,7 @@ package com.example.mychats.Login_Or_SignUp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ public class SignUp extends AppCompatActivity {
     private EditText signupPassword, signupEmail, signupName;
     private Button  signUpButton;
     private String email, password, name;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,10 @@ public class SignUp extends AppCompatActivity {
             public void onClick(View view) {
                 getDataFromEditText();  // get data from input fields
                 if( !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(name) ) {
+                    mProgressDialog.setTitle("Sign Up progress..");
+                    mProgressDialog.setMessage("One moment please...");
+                    mProgressDialog.setCanceledOnTouchOutside(false);
+                    mProgressDialog.show();
                     signUp(view);
                     Intent main = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(main);
@@ -67,6 +73,8 @@ public class SignUp extends AppCompatActivity {
         signupPassword = findViewById(R.id.signup_password);
         signupName = findViewById(R.id.signup_name);
         signUpButton = findViewById(R.id.signup_button);
+
+        mProgressDialog = new ProgressDialog(this);
     }
 
     public void signUp(final View view){
@@ -74,12 +82,14 @@ public class SignUp extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+                    mProgressDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Account created Success",Toast.LENGTH_SHORT).show();
                     Intent main = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(main);
                     finish();
                 }
                 else{
+                    mProgressDialog.hide();
                     task.addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
