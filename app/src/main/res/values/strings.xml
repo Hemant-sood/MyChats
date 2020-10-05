@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MyChats</string>
+    <string name="login">Login</string>
+    <string name="email_id">Email id</string>
+    <string name="password">Password</string>
+    <string name="new_to_mychat_signup">New to MyChat? SignUp</string>
+    <string name="sign_up">Sign up</string>
+    <string name="go_to_login_page">Go to Login page</string>
+</resources>
