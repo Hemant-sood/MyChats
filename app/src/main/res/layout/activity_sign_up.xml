@@ -6,6 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".Login_Or_SignUp.SignUp">
 
+    <include
+        android:id="@+id/toolbarsignup"
+        layout="@layout/signup_toolbar"/>
 
     <TextView
         android:id="@+id/signup"

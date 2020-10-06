@@ -2,6 +2,8 @@ package com.example.mychats;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.ToolbarWidgetWrapper;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,11 +23,18 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
+        //toolbar = findViewById(R.id.main_activity_toolbar);
+
+      //  setSupportActionBar(toolbar);
+
+
     }
 
     @Override
@@ -36,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
         if( currentUser == null){
 
-            Toast.makeText(getApplicationContext(), "Login in this page",Toast.LENGTH_SHORT).show();
 
             Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(loginIntent);

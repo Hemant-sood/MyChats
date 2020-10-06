@@ -3,6 +3,7 @@ package com.example.mychats.Login_Or_SignUp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -30,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton, signUpButton;
     private String email, password;
     private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
         signUpButton = findViewById(R.id.signup_button1);
 
         mProgressDialog = new ProgressDialog(this);
+
     }
 
     public void login(final View view){

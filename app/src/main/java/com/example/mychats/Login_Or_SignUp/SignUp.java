@@ -2,6 +2,7 @@ package com.example.mychats.Login_Or_SignUp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -29,10 +30,13 @@ public class SignUp extends AppCompatActivity {
     private String email, password, name;
     private ProgressDialog mProgressDialog;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        mAuth = FirebaseAuth.getInstance();
+
 
         init(); // For initialization
 
@@ -51,7 +55,7 @@ public class SignUp extends AppCompatActivity {
                     finish();
                 }
                 else{
-                    Snackbar.make(view, "Both fields are mandatory", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(view, "All fields are mandatory", Snackbar.LENGTH_LONG).show();
                 }
             }
         });
