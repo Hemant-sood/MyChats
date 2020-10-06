@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
 
     xmlns:local="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolbarmain"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     android:minHeight="?attr/actionBarSize"
-    local:popupTheme="@style/Theme.AppCompat.Light.NoActionBar"
-    local:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    local:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
     <TextView
         android:id="@+id/textview1"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="MyChats"
         android:textColor="@color/white"
-        android:textSize="20sp"
-        />
+        android:textSize="20sp" />
 
 </androidx.appcompat.widget.Toolbar>

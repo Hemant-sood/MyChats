@@ -8,6 +8,8 @@ import androidx.appcompat.widget.ToolbarWidgetWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.mychats.Login_Or_SignUp.LoginActivity;
@@ -30,9 +32,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
-        //toolbar = findViewById(R.id.main_activity_toolbar);
 
-      //  setSupportActionBar(toolbar);
+        toolbar = findViewById(R.id.toolbar_main);
+
+        setSupportActionBar(toolbar);
 
 
     }
@@ -45,10 +48,34 @@ public class MainActivity extends AppCompatActivity {
 
         if( currentUser == null){
 
-
             Intent loginIntent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(loginIntent);
             finish();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu, menu) ;
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        switch ( item.getItemId() ){
+            case R.id.about_menu :
+                    break;
+
+            case R.id.logout_menu : mAuth.signOut();
+                    onStart();
+                    break;
+        }
+
+        return true;
     }
 }
