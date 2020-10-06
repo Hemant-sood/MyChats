@@ -8,7 +8,7 @@
     tools:context=".Login_Or_SignUp.LoginActivity">
 
     <include
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_login"
         layout="@layout/login_toolbar"/>
 
     <TextView

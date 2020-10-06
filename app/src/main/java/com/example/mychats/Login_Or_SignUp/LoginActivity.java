@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton, signUpButton;
     private String email, password;
     private ProgressDialog mProgressDialog;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,10 @@ public class LoginActivity extends AppCompatActivity {
         signUpButton = findViewById(R.id.signup_button1);
 
         mProgressDialog = new ProgressDialog(this);
+
+        toolbar = findViewById(R.id.toolbar_login);
+        setSupportActionBar(toolbar);
+
 
     }
 

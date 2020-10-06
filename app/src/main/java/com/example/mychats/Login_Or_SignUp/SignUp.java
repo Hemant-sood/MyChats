@@ -29,7 +29,7 @@ public class SignUp extends AppCompatActivity {
     private Button  signUpButton;
     private String email, password, name;
     private ProgressDialog mProgressDialog;
-
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +79,13 @@ public class SignUp extends AppCompatActivity {
         signUpButton = findViewById(R.id.signup_button);
 
         mProgressDialog = new ProgressDialog(this);
+
+        toolbar = findViewById(R.id.toolbar_signup);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
     }
 
     public void signUp(final View view){

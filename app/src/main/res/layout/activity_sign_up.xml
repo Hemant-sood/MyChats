@@ -7,7 +7,7 @@
     tools:context=".Login_Or_SignUp.SignUp">
 
     <include
-        android:id="@+id/toolbarsignup"
+        android:id="@+id/toolbar_signup"
         layout="@layout/signup_toolbar"/>
 
     <TextView
