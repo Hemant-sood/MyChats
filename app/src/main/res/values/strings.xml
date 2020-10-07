@@ -8,4 +8,6 @@
     <string name="go_to_login_page">Go to Login page</string>
     <string name="about">About</string>
     <string name="logout">Logout</string>
+    <string name="account">My Account</string>
+    <string name="my_account_setting">My Account Setting</string>
 </resources>

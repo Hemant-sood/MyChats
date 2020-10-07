@@ -74,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.logout_menu : mAuth.signOut();
                     onStart();
                     break;
+            case R.id.account_menu :  Intent myAccount = new Intent(getApplicationContext(), MyAccount.class);
+                                    startActivity(myAccount);
+                                    break;
         }
 
         return true;
