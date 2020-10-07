@@ -25,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MyAccount extends AppCompatActivity {
@@ -63,41 +65,17 @@ public class MyAccount extends AppCompatActivity {
         String newName = name.getText().toString();
         String newStatus = status.getText().toString();
 
-        mRef.child("Name").setValue(newName)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if( task.isSuccessful() ) {
-                            Toast.makeText(getApplicationContext(), "Name Save Successfully", Toast.LENGTH_SHORT ).show();
-                        }
-                        else{
-                            task.addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT ).show();
-                                }
-                            });
-                        }
-                    }
-                });
+        HashMap<String, String> map = new HashMap<>();
+        map.put("Name", newName);
+        map.put("Status", newStatus);
 
-        mRef.child("Status").setValue(newStatus)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if( task.isSuccessful() ) {
-                            Toast.makeText(getApplicationContext(), "Status Save Successfully", Toast.LENGTH_SHORT ).show();
-                        }
-                        else{
-                            task.addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT ).show();
-                                }
-                            });
-                        }
-                    }
-                });
+        mRef.setValue(map)
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Toast.makeText(getApplicationContext(), "Changes updated...", Toast.LENGTH_SHORT).show();
+                }
+            });
 
         getUserDetails();
 
