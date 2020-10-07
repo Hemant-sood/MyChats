@@ -29,13 +29,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
 
         toolbar = findViewById(R.id.toolbar_main);
-
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
     }
