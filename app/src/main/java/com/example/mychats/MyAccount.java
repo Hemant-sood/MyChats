@@ -3,12 +3,20 @@ package com.example.mychats;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
+import android.annotation.SuppressLint;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,15 +43,75 @@ public class MyAccount extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_account);
+
         init();
+        getUserDetails();   // For fetching user Details (name, status, image)
+
+        saveChanges.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveDetails();
+            }
+        });
 
 
+
+    }
+
+    private void saveDetails() {
+
+        String newName = name.getText().toString();
+        String newStatus = status.getText().toString();
+
+        mRef.child("Name").setValue(newName)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if( task.isSuccessful() ) {
+                            Toast.makeText(getApplicationContext(), "Name Save Successfully", Toast.LENGTH_SHORT ).show();
+                        }
+                        else{
+                            task.addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT ).show();
+                                }
+                            });
+                        }
+                    }
+                });
+
+        mRef.child("Status").setValue(newStatus)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if( task.isSuccessful() ) {
+                            Toast.makeText(getApplicationContext(), "Status Save Successfully", Toast.LENGTH_SHORT ).show();
+                        }
+                        else{
+                            task.addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT ).show();
+                                }
+                            });
+                        }
+                    }
+                });
+
+        getUserDetails();
+
+    }
+
+    private void getUserDetails() {
 
         mRef.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-
+                name.setText(snapshot.child("Name").getValue().toString());
+                status.setText(snapshot.child("Status").getValue().toString());
             }
 
             @Override
@@ -51,7 +119,6 @@ public class MyAccount extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), error.toException().getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-
 
     }
 
