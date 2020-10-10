@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,6 +30,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -46,8 +51,11 @@ public class MyAccount extends AppCompatActivity {
     private EditText name, status;
     private Button saveChanges;
     private CircleImageView myImage;
+    private Uri imageUri = null;
+    private String downloadedUrl = "";
     private ImageView cameraImg;
-    private static int RESULT_GALARY = 121;
+    private StorageReference mStorageRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +64,6 @@ public class MyAccount extends AppCompatActivity {
 
         init();
         getUserDetails();   // For fetching user Details (name, status, image)
-
 
         cameraImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,19 +75,10 @@ public class MyAccount extends AppCompatActivity {
         saveChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveDetails();
+                saveDetails(); imageUri = null;
             }
         });
 
-
-    }
-
-    private void getImage() {
-
-        // start picker to get image for cropping and then use the image in cropping activity
-        CropImage.activity()
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .start(this);
 
     }
 
@@ -90,53 +88,14 @@ public class MyAccount extends AppCompatActivity {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                Uri resultUri = result.getUri();
-                myImage.setImageURI(resultUri);
+                imageUri = result.getUri();
+                myImage.setImageURI(imageUri);
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    private void saveDetails() {
-
-        String newName = name.getText().toString();
-        String newStatus = status.getText().toString();
-
-        HashMap<String, String> map = new HashMap<>();
-        map.put("Name", newName);
-        map.put("Status", newStatus);
-
-        mRef.setValue(map)
-            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(getApplicationContext(), "Changes updated...", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        getUserDetails();
-
-    }
-
-    private void getUserDetails() {
-
-        mRef.addValueEventListener(new ValueEventListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                name.setText(snapshot.child("Name").getValue().toString());
-                status.setText(snapshot.child("Status").getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getApplicationContext(), error.toException().getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
     }
 
     private void init() {
@@ -156,7 +115,88 @@ public class MyAccount extends AppCompatActivity {
         String uid = currentUser.getUid();
 
         database = FirebaseDatabase.getInstance();
-        mRef = database.getReference("Users/"+uid);
+        mRef = database.getReference("Users").child(uid);
+
+        mStorageRef = FirebaseStorage.getInstance().getReference().child("UsersProfile").child(uid);
 
     }
+
+
+
+    private void getUserDetails() {
+
+        mRef.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                name.setText(snapshot.child("Name").getValue().toString());
+                status.setText(snapshot.child("Status").getValue().toString());
+
+                if( snapshot.child("ProfileLink").exists()) {
+                    downloadedUrl = snapshot.child("ProfileLink").getValue().toString();
+                    Picasso.get().load(downloadedUrl).into(myImage);
+                }
+                else
+                    Picasso.get().load(R.drawable.profile_pic_default).into(myImage);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(), error.toException().getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    private void getImage() {
+
+        // start picker to get image for cropping and then use the image in cropping activity
+        CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(this);
+
+    }
+
+
+
+    private void saveDetails() {
+
+        String newName = name.getText().toString().trim();
+        String newStatus = status.getText().toString().trim();
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("Name", newName);
+        map.put("Status", newStatus);
+
+        mRef.setValue(map)
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Toast.makeText(getApplicationContext(), "Changes updated...", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        if( imageUri != null) {
+            mStorageRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                 taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                     @Override
+                     public void onSuccess(Uri uri) {
+                         mRef.child("ProfileLink").setValue(uri.toString());
+                     }
+                 });
+                }
+            });
+        }
+
+        getUserDetails();
+
+    }
+
+
+
 }
