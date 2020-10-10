@@ -1,13 +1,17 @@
 package com.example.mychats;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -39,7 +43,7 @@ public class MyAccount extends AppCompatActivity {
     private EditText name, status;
     private Button saveChanges;
     private CircleImageView myImage;
-
+    private static int RESULT_GALARY = 121;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,13 @@ public class MyAccount extends AppCompatActivity {
         init();
         getUserDetails();   // For fetching user Details (name, status, image)
 
+        myImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getImage();
+            }
+        });
+
         saveChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,6 +68,24 @@ public class MyAccount extends AppCompatActivity {
         });
 
 
+    }
+
+    private void getImage() {
+        Intent galaryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galaryIntent, RESULT_GALARY);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if( requestCode == RESULT_GALARY && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            myImage.setImageURI(uri);
+
+        }
+        else
+            Toast.makeText(getApplicationContext(), "There is some error", Toast.LENGTH_LONG).show();
 
     }
 
