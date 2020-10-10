@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +29,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 
@@ -43,6 +46,7 @@ public class MyAccount extends AppCompatActivity {
     private EditText name, status;
     private Button saveChanges;
     private CircleImageView myImage;
+    private ImageView cameraImg;
     private static int RESULT_GALARY = 121;
 
     @Override
@@ -53,7 +57,8 @@ public class MyAccount extends AppCompatActivity {
         init();
         getUserDetails();   // For fetching user Details (name, status, image)
 
-        myImage.setOnClickListener(new View.OnClickListener() {
+
+        cameraImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getImage();
@@ -71,22 +76,27 @@ public class MyAccount extends AppCompatActivity {
     }
 
     private void getImage() {
-        Intent galaryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(galaryIntent, RESULT_GALARY);
+
+        // start picker to get image for cropping and then use the image in cropping activity
+        CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(this);
 
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if( requestCode == RESULT_GALARY && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            myImage.setImageURI(uri);
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                myImage.setImageURI(resultUri);
 
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
         }
-        else
-            Toast.makeText(getApplicationContext(), "There is some error", Toast.LENGTH_LONG).show();
-
     }
 
     private void saveDetails() {
@@ -135,6 +145,7 @@ public class MyAccount extends AppCompatActivity {
         myImage = findViewById(R.id.profile_pic);
         status = findViewById(R.id.profile_status);
         saveChanges = findViewById(R.id.profile_save_button);
+        cameraImg = findViewById(R.id.camrea_icon);
 
         toolbar = findViewById(R.id.toolbar_my_account);
         setSupportActionBar(toolbar);
