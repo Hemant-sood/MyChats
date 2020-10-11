@@ -6,12 +6,16 @@
     <item
         android:id="@+id/about_menu"
         android:title="@string/about"
+
         />
-    <item android:title="@string/account"
+    <item
+        android:title="@string/account"
         android:id="@+id/account_menu"
+
         />
     <item
         android:id="@+id/logout_menu"
         android:title="@string/logout"
+
         />
 </menu>
