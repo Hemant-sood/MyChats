@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,8 +23,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -36,6 +41,7 @@ public class MyAccount extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference mRef;
     private FirebaseAuth mAuth;
+    private TextView currName, currStatus;
     private EditText name, status;
     private Button saveChanges;
     private ImageView saveImage, saveName, saveStatus;
@@ -65,6 +71,7 @@ public class MyAccount extends AppCompatActivity {
                             if(task.isSuccessful()) {
                                 name.setText("");
                                 Toast.makeText(getApplicationContext(), "Update Success", Toast.LENGTH_LONG).show();
+                                updateUi();
                             }
                             else{
                                 task.addOnFailureListener(new OnFailureListener() {
@@ -95,6 +102,7 @@ public class MyAccount extends AppCompatActivity {
                             if(task.isSuccessful()) {
                                 status.setText("");
                                 Toast.makeText(getApplicationContext(), "Update Success", Toast.LENGTH_LONG).show();
+                                updateUi();
                             }
                             else{
                                 task.addOnFailureListener(new OnFailureListener() {
@@ -118,6 +126,19 @@ public class MyAccount extends AppCompatActivity {
     }
 
     private void updateUi() {
+
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                currName.setText( snapshot.child("Name").getValue().toString() );
+                currStatus.setText( snapshot.child("Status").getValue().toString() );
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
 
@@ -146,7 +167,8 @@ public class MyAccount extends AppCompatActivity {
         saveImage = findViewById(R.id.saveImageId);
         saveName = findViewById(R.id.saveNameID);
         saveStatus = findViewById(R.id.saveStatusId);
-
+        currName = findViewById(R.id.currentName);
+        currStatus = findViewById(R.id.currentStatus);
 
         mProgressDialog  = new ProgressDialog(this);
 
