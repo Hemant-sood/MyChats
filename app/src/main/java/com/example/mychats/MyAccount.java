@@ -142,7 +142,7 @@ public class MyAccount extends AppCompatActivity {
             });
         }
         else{
-            Toast.makeText(getApplicationContext(), "Can't be empty", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Can't be empty", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -162,7 +162,7 @@ public class MyAccount extends AppCompatActivity {
                         task.addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }

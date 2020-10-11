@@ -1,10 +1,12 @@
 package com.example.mychats;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.ToolbarWidgetWrapper;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -72,8 +74,21 @@ public class MainActivity extends AppCompatActivity {
             case R.id.about_menu :
                     break;
 
-            case R.id.logout_menu : mAuth.signOut();
-                    onStart();
+            case R.id.logout_menu :
+                new AlertDialog.Builder(this)
+                        .setTitle("Alert")
+                        .setMessage("Do you really want to Logout?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mAuth.signOut();
+                                Toast.makeText(getApplicationContext(), "Logout success", Toast.LENGTH_LONG).show();
+                                onStart();
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
+
                     break;
             case R.id.account_menu :  Intent myAccount = new Intent(getApplicationContext(), MyAccount.class);
                                     startActivity(myAccount);
