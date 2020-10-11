@@ -133,7 +133,7 @@ public class SignUp extends AppCompatActivity {
 
         map.put("Name", name);
         map.put("Status", "");
-        map.put("MyImg", "Link");
+        map.put("ProfileLink", "");
 
         mRef.setValue(map)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
