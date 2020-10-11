@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -48,6 +48,7 @@ public class MyAccount extends AppCompatActivity {
     private ImageView saveImage, saveName, saveStatus;
     private CircleImageView myImage;
     private Uri imageUri = null;
+    private String downloadUri = "";
 
     private StorageReference mStorageRef;
     private ProgressDialog mProgressDialog;
@@ -59,7 +60,8 @@ public class MyAccount extends AppCompatActivity {
 
         init();
 
-        updateUi();
+        updateStatusAndName();
+        updateProfileImage();
 
         saveName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +89,26 @@ public class MyAccount extends AppCompatActivity {
 
     }
 
+    private void updateProfileImage() {
+
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                downloadUri = snapshot.child("ProfileLink").getValue().toString();
+                if( ! TextUtils.isEmpty( downloadUri ) ) {
+                    Picasso.get().load(downloadUri).placeholder(R.drawable.profile_pic_default).into(myImage) ;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
+
     private void pickImageFromGalary() {
 
         // start picker to get image for cropping and then use the image in cropping activity
@@ -106,7 +128,7 @@ public class MyAccount extends AppCompatActivity {
                     if(task.isSuccessful()) {
                         name.setText("");
                         Toast.makeText(getApplicationContext(), "Update Success", Toast.LENGTH_LONG).show();
-                        updateUi();
+                        updateStatusAndName();
                     }
                     else{
                         task.addOnFailureListener(new OnFailureListener() {
@@ -134,7 +156,7 @@ public class MyAccount extends AppCompatActivity {
                     if(task.isSuccessful()) {
                         status.setText("");
                         Toast.makeText(getApplicationContext(), "Update Success", Toast.LENGTH_LONG).show();
-                        updateUi();
+                        updateStatusAndName();
                     }
                     else{
                         task.addOnFailureListener(new OnFailureListener() {
@@ -152,7 +174,7 @@ public class MyAccount extends AppCompatActivity {
         }
     }
 
-    private void updateUi() {
+    private void updateStatusAndName() {
 
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -204,6 +226,7 @@ public class MyAccount extends AppCompatActivity {
                                             public void onSuccess(Void aVoid) {
                                                 mProgressDialog.dismiss();
                                                 Toast.makeText(getApplicationContext(), "Uploaded Success", Toast.LENGTH_LONG).show();
+                                                updateProfileImage();
                                             }
                                         })
                                         .addOnFailureListener(new OnFailureListener() {
@@ -223,6 +246,7 @@ public class MyAccount extends AppCompatActivity {
 
     private void init() {
 
+        myImage = findViewById(R.id.profile_pic);
         name = findViewById(R.id.yourName);
         status = findViewById(R.id.yourStatus);
         saveImage = findViewById(R.id.saveImageId);
