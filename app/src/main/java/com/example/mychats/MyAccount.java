@@ -9,17 +9,16 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,10 +26,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ThrowOnExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -43,7 +45,6 @@ public class MyAccount extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private TextView currName, currStatus;
     private EditText name, status;
-    private Button saveChanges;
     private ImageView saveImage, saveName, saveStatus;
     private CircleImageView myImage;
     private Uri imageUri = null;
@@ -63,30 +64,7 @@ public class MyAccount extends AppCompatActivity {
         saveName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String newName = name.getText().toString().trim();
-                if( ! TextUtils.isEmpty(newName) ) {
-                    mRef.child("Name").setValue(newName).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-                                name.setText("");
-                                Toast.makeText(getApplicationContext(), "Update Success", Toast.LENGTH_LONG).show();
-                                updateUi();
-                            }
-                            else{
-                                task.addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "Can't be empty", Toast.LENGTH_LONG).show();
-                }
+                saveNameIntoDatabase(); // save new Name into Firebase Realtime Database
             }
         });
 
@@ -94,35 +72,84 @@ public class MyAccount extends AppCompatActivity {
         saveStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String newStatus = status.getText().toString().trim();
-                if( ! TextUtils.isEmpty(newStatus) ) {
-                    mRef.child("Status").setValue(newStatus).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()) {
-                                status.setText("");
-                                Toast.makeText(getApplicationContext(), "Update Success", Toast.LENGTH_LONG).show();
-                                updateUi();
-                            }
-                            else{
-                                task.addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "Can't be empty", Toast.LENGTH_LONG).show();
-                }
+                saveStatusIntoDatabase();  // save new Status into Firebase Realtime Database
+            }
+        });
+
+        saveImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickImageFromGalary();
             }
         });
 
 
 
+    }
+
+    private void pickImageFromGalary() {
+
+        // start picker to get image for cropping and then use the image in cropping activity
+        CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(this);
+
+    }
+
+
+    private void saveNameIntoDatabase(){
+        String newName = name.getText().toString().trim();
+        if( ! TextUtils.isEmpty(newName) ) {
+            mRef.child("Name").setValue(newName).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+                        name.setText("");
+                        Toast.makeText(getApplicationContext(), "Update Success", Toast.LENGTH_LONG).show();
+                        updateUi();
+                    }
+                    else{
+                        task.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "Can't be empty", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    private void saveStatusIntoDatabase(){
+        String newStatus = status.getText().toString().trim();
+        if( ! TextUtils.isEmpty(newStatus) ) {
+            mRef.child("Status").setValue(newStatus).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+                        status.setText("");
+                        Toast.makeText(getApplicationContext(), "Update Success", Toast.LENGTH_LONG).show();
+                        updateUi();
+                    }
+                    else{
+                        task.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "Can't be empty", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void updateUi() {
@@ -150,14 +177,48 @@ public class MyAccount extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 imageUri = result.getUri();
-                myImage.setImageURI(imageUri);
-
+//                myImage.setImageURI(imageUri);
+                makeCustomProgressDialog("Uploading image");
+                uploadImageIntoDatabase();
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void uploadImageIntoDatabase() {
+        mStorageRef.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Task<Uri> result = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                        result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String photoStringLink = uri.toString();
+                                mRef.child("ProfileLink").setValue(photoStringLink)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                mProgressDialog.dismiss();
+                                                Toast.makeText(getApplicationContext(), "Uploaded Success", Toast.LENGTH_LONG).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                mProgressDialog.dismiss();
+                                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+                            }
+                        });
+
+                    }
+                });
     }
 
     private void init() {
@@ -170,7 +231,7 @@ public class MyAccount extends AppCompatActivity {
         currName = findViewById(R.id.currentName);
         currStatus = findViewById(R.id.currentStatus);
 
-        mProgressDialog  = new ProgressDialog(this);
+        mProgressDialog = new ProgressDialog(this);
 
         toolbar = findViewById(R.id.toolbar_my_account);
         setSupportActionBar(toolbar);
@@ -193,7 +254,6 @@ public class MyAccount extends AppCompatActivity {
         mProgressDialog.setMessage("One moment please");
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.show();
-
     }
 
 }
