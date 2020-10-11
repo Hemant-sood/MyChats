@@ -4,23 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.appcompat.widget.ToolbarWidgetWrapper;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.mychats.Adapters.FragmentsAndViewPager;
 import com.example.mychats.Login_Or_SignUp.LoginActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthResult;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -28,7 +23,10 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private Toolbar toolbar;
+    private ViewPager mViewPager;
 
+    private FragmentsAndViewPager mFragmentsAndViewPager;
+    private TabLayout mTabLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -41,7 +39,21 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
+        mTabLayout = findViewById(R.id.tabLayout_main);
+        mViewPager = findViewById(R.id.viewPager);
+        mFragmentsAndViewPager = new FragmentsAndViewPager(getSupportFragmentManager());
+        mViewPager.setAdapter(mFragmentsAndViewPager);
+        mTabLayout.setupWithViewPager(mViewPager);
+
+        mTabLayout.getTabAt(0).setIcon(R.drawable.chat);
+        mTabLayout.getTabAt(1).setIcon(R.drawable.addfriend);
+
+
     }
+
+
+
+
 
     @Override
     public void onStart() {
