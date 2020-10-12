@@ -1,66 +1,138 @@
 package com.example.mychats.Fragments;
 
+import android.media.Image;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.VerifiedInputEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.mychats.R;
+import com.example.mychats.UserModel;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.common.api.Api;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.squareup.picasso.Picasso;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Find#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
+
 public class Find extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
-    public Find() {
-        // Required empty public constructor
-    }
+    private View view;
+    private RecyclerView recyclerView;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Find.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Find newInstance(String param1, String param2) {
-        Find fragment = new Find();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private DatabaseReference mDatabaseReference;
+    private Query query;
+    private FirebaseRecyclerAdapter< UserModel, Holder> firebaseRecyclerAdapter;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_find, container, false);
+
+        view = inflater.inflate(R.layout.fragment_find, container, false);
+
+        init();
+
+        return view;
     }
+
+    private void init() {
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+
+
+        recyclerView = view.findViewById(R.id.recyclerView__find);
+
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
+        Query query = FirebaseDatabase.getInstance().getReference().child("Users");
+        FirebaseRecyclerOptions<UserModel> options = new FirebaseRecyclerOptions.Builder<UserModel>()
+                .setQuery(query, UserModel.class)
+                .build();
+
+        FirebaseRecyclerAdapter<UserModel, Holder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<UserModel, Holder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull Holder holder, int i, @NonNull UserModel userModel) {
+
+                holder.setName(userModel.getName());
+                holder.setImage(userModel.getProfileLink());
+                holder.setStatus(userModel.getStatus());
+            }
+
+            @NonNull
+            @Override
+            public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.view_for_recyclerview_find, parent, false);
+                return new Holder(view);
+            }
+        };
+
+
+        firebaseRecyclerAdapter.startListening();
+
+        recyclerView.setAdapter(firebaseRecyclerAdapter);
+
+
+    }
+
+
+
+    class Holder extends RecyclerView.ViewHolder {
+
+        View mView;
+        public Holder(@NonNull View itemView) {
+            super(itemView);
+            mView = itemView;
+
+        }
+
+
+        public void setName(String name) {
+            TextView userName = mView.findViewById(R.id.userName);
+            userName.setText(name);
+        }
+
+        public void setStatus(String status) {
+            TextView userStatus = mView.findViewById(R.id.userStatus);
+            userStatus.setText(status);
+        }
+
+        public void setImage(String profileLink) {
+            CircleImageView circleImageView = mView.findViewById(R.id.userImage);
+            Picasso.get().load(profileLink).placeholder(R.drawable.profile_pic_default).into(circleImageView);
+        }
+    }
+
+
 }
