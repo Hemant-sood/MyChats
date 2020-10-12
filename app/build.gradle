@@ -37,8 +37,12 @@ dependencies {
 
     implementation "androidx.viewpager2:viewpager2:1.0.0"
 
+    implementation 'id.zelory:compressor:1.0.4'
+
+
     // Declare the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
+
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-auth:16.0.5'
     implementation 'com.google.firebase:firebase-core:16.0.4'

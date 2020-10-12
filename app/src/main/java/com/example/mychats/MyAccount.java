@@ -6,8 +6,10 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -34,7 +36,12 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+import id.zelory.compressor.Compressor;
 
 public class MyAccount extends AppCompatActivity {
 
@@ -201,7 +208,11 @@ public class MyAccount extends AppCompatActivity {
                 imageUri = result.getUri();
 //                myImage.setImageURI(imageUri);
                 makeCustomProgressDialog("Uploading image");
-                uploadImageIntoDatabase();
+                try {
+                    uploadImageIntoDatabase();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
@@ -210,8 +221,18 @@ public class MyAccount extends AppCompatActivity {
         }
     }
 
-    private void uploadImageIntoDatabase() {
-        mStorageRef.putFile(imageUri)
+    private void uploadImageIntoDatabase() throws IOException {
+
+        File file = new File(imageUri.getPath());
+
+        Bitmap bitmap =  Compressor.getDefault(this).compressToBitmap(file);
+
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+
+        mStorageRef.putBytes(byteArray)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

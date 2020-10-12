@@ -1,5 +1,6 @@
 package com.example.mychats.Fragments;
 
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.VerifiedInputEvent;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.mychats.ProfileIntroduction;
 import com.example.mychats.R;
 import com.example.mychats.UserModel;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -84,9 +87,23 @@ public class Find extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull Holder holder, int i, @NonNull UserModel userModel) {
 
+                if( !TextUtils.isEmpty(userModel.getProfileLink()) )
+                    holder.setImage(userModel.getProfileLink());
+
                 holder.setName(userModel.getName());
-                holder.setImage(userModel.getProfileLink());
+
                 holder.setStatus(userModel.getStatus());
+
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent profileIntroduction = new Intent(view.getContext(), ProfileIntroduction.class );
+
+                        startActivity(profileIntroduction);
+                    }
+                });
+
             }
 
             @NonNull
