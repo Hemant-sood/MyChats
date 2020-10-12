@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
 
         mTabLayout.getTabAt(0).setIcon(R.drawable.chat);
-        mTabLayout.getTabAt(1).setIcon(R.drawable.addfriend);
+        mTabLayout.getTabAt(1).setIcon(R.drawable.mynetwork);
+        mTabLayout.getTabAt(2).setIcon(R.drawable.addfriend);
 
 
     }

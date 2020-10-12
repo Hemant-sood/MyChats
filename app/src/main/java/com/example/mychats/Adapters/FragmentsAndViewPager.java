@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.example.mychats.Fragments.Find;
 import com.example.mychats.Fragments.MyChats;
+import com.example.mychats.Fragments.MyNetwork;
 
 public class FragmentsAndViewPager extends FragmentPagerAdapter {
 
@@ -27,15 +28,19 @@ public class FragmentsAndViewPager extends FragmentPagerAdapter {
                 MyChats myChatsFragment = new MyChats();
                 return myChatsFragment;
             case 1 :
+                MyNetwork myNetwork = new MyNetwork();
+                return myNetwork;
+            case 2 :
                 Find findFragment = new Find();
                 return findFragment;
+
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     @Nullable
@@ -45,7 +50,9 @@ public class FragmentsAndViewPager extends FragmentPagerAdapter {
                 case 0 :
                     return "My Chats";
                 case 1 :
-                    return "Find";
+                    return "My Network";
+            case 2 :
+                return "Find";
         }
         return "";
     }
