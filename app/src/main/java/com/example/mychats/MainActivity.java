@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.logout_menu :
                 new AlertDialog.Builder(this)
-                        .setTitle("Alert")
+                        .setTitle("Logout")
                         .setMessage("Do you really want to Logout?")
                         .setIcon(R.drawable.logout)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {

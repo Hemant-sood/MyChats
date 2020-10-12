@@ -1,10 +1,12 @@
 package com.example.mychats;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -96,17 +98,43 @@ public class MyAccount extends AppCompatActivity {
         removeImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRef.child("ProfileLink").setValue("").addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
 
-                    }
-                });
+                new AlertDialog.Builder(MyAccount.this)
+                        .setTitle("Remove Profile Image")
+                        .setMessage("Do you really want to remove Profile Image ?")
+                        .setIcon(R.drawable.remove)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                removeImageLinkFromRealTimeDatabase();
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
             }
         });
 
 
     }
+
+    private void removeImageLinkFromRealTimeDatabase() {
+
+        mRef.child("ProfileLink").setValue("").addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getApplicationContext(), "Profile photo removed....", Toast.LENGTH_SHORT).show();
+                Picasso.get().load(R.drawable.profile_pic_default).into(myImage);
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+
 
     private void updateProfileImage() {
 
