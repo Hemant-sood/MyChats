@@ -52,7 +52,7 @@ public class MyAccount extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private TextView currName, currStatus;
     private EditText name, status;
-    private ImageView saveImage, saveName, saveStatus;
+    private ImageView saveImage, saveName, saveStatus, removeImage;
     private CircleImageView myImage;
     private Uri imageUri = null;
     private String downloadUri = "";
@@ -92,6 +92,18 @@ public class MyAccount extends AppCompatActivity {
             }
         });
 
+
+        removeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRef.child("ProfileLink").setValue("").addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                    }
+                });
+            }
+        });
 
 
     }
@@ -275,6 +287,7 @@ public class MyAccount extends AppCompatActivity {
         saveStatus = findViewById(R.id.saveStatusId);
         currName = findViewById(R.id.currentName);
         currStatus = findViewById(R.id.currentStatus);
+        removeImage = findViewById(R.id.removeProfile);
 
         mProgressDialog = new ProgressDialog(this);
 
