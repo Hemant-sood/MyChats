@@ -4,6 +4,61 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
     tools:context=".ProfileIntroduction">
+
+
+    <include
+        android:id="@+id/toolbar_profile_introduction"
+        layout="@layout/profile_introduction_toolbar" />
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/selectedUserImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="64dp"
+        android:src="@drawable/profile_pic_default"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_profile_introduction" />
+
+    <TextView
+        android:id="@+id/selectedUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/black"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="@+id/selectedUserImage"
+        app:layout_constraintStart_toStartOf="@+id/selectedUserImage"
+        app:layout_constraintTop_toBottomOf="@+id/selectedUserImage" />
+
+    <TextView
+        android:id="@+id/selectedUserStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="dfdfdf"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/selectedUserName"
+        app:layout_constraintStart_toStartOf="@+id/selectedUserName"
+        app:layout_constraintTop_toBottomOf="@+id/selectedUserName" />
+
+    <Button
+        android:id="@+id/sendFriendRequest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:padding="10dp"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/selectedUserImage"
+        app:layout_constraintStart_toStartOf="@+id/selectedUserImage"
+        app:layout_constraintTop_toBottomOf="@+id/selectedUserStatus" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

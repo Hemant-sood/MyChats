@@ -85,7 +85,7 @@ public class Find extends Fragment {
 
         FirebaseRecyclerAdapter<UserModel, Holder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<UserModel, Holder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull Holder holder, int i, @NonNull UserModel userModel) {
+            protected void onBindViewHolder(@NonNull Holder holder, final int i, @NonNull UserModel userModel) {
 
                 if( !TextUtils.isEmpty(userModel.getProfileLink()) )
                     holder.setImage(userModel.getProfileLink());
@@ -99,7 +99,8 @@ public class Find extends Fragment {
                     @Override
                     public void onClick(View view) {
                         Intent profileIntroduction = new Intent(view.getContext(), ProfileIntroduction.class );
-
+                        String user_ID = getRef(i).getKey();
+                        profileIntroduction.putExtra("user_ID", user_ID);
                         startActivity(profileIntroduction);
                     }
                 });
