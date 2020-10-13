@@ -34,6 +34,7 @@ public class ProfileIntroduction extends AppCompatActivity {
     private CircleImageView userImage;
     private String userProfile_ID;
     private Button requestButton;
+    private TextView isReqSent;
     private DatabaseReference mFriendRequestDatabaseReference;
     private String currentUser_ID;
     private String sentPath = "Sent" , receivedPath = "Received" ;
@@ -50,7 +51,6 @@ public class ProfileIntroduction extends AppCompatActivity {
 
         getUserDetailsFromRealTimeDatabase();
 
-
         requestButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -59,7 +59,6 @@ public class ProfileIntroduction extends AppCompatActivity {
                 // If current user is already a friend of UserProfile then setButton text respectively
                 if ( isFriend) {
                     cancelRequest();
-
                 }
                 else {
                     sendRequest();
@@ -85,10 +84,12 @@ public class ProfileIntroduction extends AppCompatActivity {
                     isFriend = true;
                     Log.d("Found", "Fond");
                     requestButton.setText("Cancel Request");
+                    isReqSent.setText("Request sent successfully");
                 }
-                else
-                    requestButton.setText("Sent Request");
-
+                else {
+                    requestButton.setText("Send Request");
+                    isReqSent.setText("To make Friend Send a Request");
+                }
                 requestButton.setVisibility(View.VISIBLE);
             }
 
@@ -153,6 +154,8 @@ public class ProfileIntroduction extends AppCompatActivity {
         userStatus = findViewById(R.id.selectedUserStatus);
         requestButton = findViewById(R.id.sendFriendRequest);
         requestButton.setVisibility(View.INVISIBLE);
+        isReqSent = findViewById(R.id.isRequestSent);
+
 
 
         //get user_ID Data from Intent

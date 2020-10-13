@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.mychats.Adapters.FragmentsAndViewPager;
@@ -24,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Toolbar toolbar;
     private ViewPager mViewPager;
+
+    private ImageView receivedRequest;
 
     private FragmentsAndViewPager mFragmentsAndViewPager;
     private TabLayout mTabLayout;
@@ -39,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
 
+        receivedRequest = findViewById(R.id.receivedRequest);
+
+
+        //For tab layout
         mTabLayout = findViewById(R.id.tabLayout_main);
         mViewPager = findViewById(R.id.viewPager);
         mFragmentsAndViewPager = new FragmentsAndViewPager(getSupportFragmentManager());
@@ -48,6 +56,25 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.getTabAt(0).setIcon(R.drawable.chat);
         mTabLayout.getTabAt(1).setIcon(R.drawable.mynetwork);
         mTabLayout.getTabAt(2).setIcon(R.drawable.addfriend);
+
+
+        receivedRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent receivedRequestIntent = new Intent(getApplicationContext(), ReceivedRequest.class);
+                startActivity(receivedRequestIntent);
+            }
+        });
+
+
+        receivedRequest.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                Toast.makeText(getApplicationContext(), "By tapping on it you can see all your Friend request", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
 
 
     }
@@ -85,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         super.onOptionsItemSelected(item);
 
         switch ( item.getItemId() ){
+
             case R.id.about_menu :
                     break;
 
