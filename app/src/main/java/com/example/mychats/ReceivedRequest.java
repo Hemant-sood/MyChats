@@ -8,18 +8,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.UiAutomation;
 import android.content.Intent;
+import android.graphics.fonts.FontFamily;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mychats.Fragments.Find;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,14 +52,12 @@ public class ReceivedRequest extends AppCompatActivity {
         setContentView(R.layout.activity_received_request);
         init();
 
-
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
-
 
 
         Query query = mReceivedPathDatabaseReference;
@@ -73,8 +75,41 @@ public class ReceivedRequest extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull final Holder holder, int i, @NonNull ReceivedRequestModel receivedRequestModel) {
+            protected void onBindViewHolder(@NonNull final Holder holder, final int i, @NonNull ReceivedRequestModel receivedRequestModel) {
+
                 String link = receivedRequestModel.getName();
+
+                holder.accept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(view.getContext(), "dfdfffdfd", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+                holder.decline.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View view) {
+                        DatabaseReference friend = getRef(i);
+                        friend.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(view.getContext(), "Decline success", Toast.LENGTH_LONG).show();
+                            }
+                        })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                            Log.d("Id", getRef(i).getKey());
+                    }
+                });
+
+
+
                 mUsersReference.child(link).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -89,7 +124,9 @@ public class ReceivedRequest extends AppCompatActivity {
                         holder.setName(userModel.getName());
                         holder.setStatus(userModel.getStatus());
 
+
                     }
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
@@ -113,9 +150,14 @@ public class ReceivedRequest extends AppCompatActivity {
     class Holder extends RecyclerView.ViewHolder {
 
         View mView;
+        public Button accept, decline;
+
+
         public Holder(@NonNull View itemView) {
             super(itemView);
             mView = itemView;
+            accept = mView.findViewById(R.id.acceptButton);
+            decline = mView.findViewById(R.id.declineButton);
 
         }
 
