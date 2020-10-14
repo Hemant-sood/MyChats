@@ -114,7 +114,7 @@ public class ProfileIntroduction extends AppCompatActivity {
 
         mFriendRequestDatabaseReference.child(sentPath).child(currentUser_ID).child(userProfile_ID).setValue("");
 
-        mFriendRequestDatabaseReference.child(receivedPath).child(userProfile_ID).child(currentUser_ID).setValue("");
+        mFriendRequestDatabaseReference.child(receivedPath).child(userProfile_ID).child(currentUser_ID).child("Name").setValue(currentUser_ID);
 
 
     }

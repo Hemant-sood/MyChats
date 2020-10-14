@@ -23,29 +23,20 @@ import com.example.mychats.R;
 import com.example.mychats.UserModel;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.common.api.Api;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class Find extends Fragment {
 
-
-
     private View view;
     private RecyclerView recyclerView;
 
     private DatabaseReference mDatabaseReference;
-    private Query query;
-    private FirebaseRecyclerAdapter< UserModel, Holder> firebaseRecyclerAdapter;
 
 
     @Override
@@ -62,13 +53,8 @@ public class Find extends Fragment {
     private void init() {
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
-
-
         recyclerView = view.findViewById(R.id.recyclerView__find);
-
-
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
 
     }
 
@@ -120,7 +106,6 @@ public class Find extends Fragment {
         firebaseRecyclerAdapter.startListening();
 
         recyclerView.setAdapter(firebaseRecyclerAdapter);
-
 
     }
 
