@@ -42,8 +42,8 @@ public class ReceivedRequest extends AppCompatActivity {
 
     private Toolbar toolbar;
     private String currentUser_ID;
-    private String receivedPath = "Received";
-    private DatabaseReference mReceivedPathDatabaseReference;
+    private String receivedPath = "Received", sentPath = "Sent";
+    private DatabaseReference mReceivedPathDatabaseReference, mSentPathDatabaseReference;
     private DatabaseReference mUsersReference;
     private RecyclerView recyclerView;
     @Override
@@ -82,7 +82,7 @@ public class ReceivedRequest extends AppCompatActivity {
                 holder.accept.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(view.getContext(), "dfdfffdfd", Toast.LENGTH_LONG).show();
+                        Toast.makeText(view.getContext(), "Friend Added", Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -90,11 +90,29 @@ public class ReceivedRequest extends AppCompatActivity {
                 holder.decline.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        DatabaseReference friend = getRef(i);
-                        friend.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        final DatabaseReference friend = getRef(i);
+
+
+                        mSentPathDatabaseReference.child(getRef(i).getKey()).child(currentUser_ID).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Toast.makeText(view.getContext(), "Decline success", Toast.LENGTH_LONG).show();
+
+                                friend.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        onStart();
+                                        Toast.makeText(view.getContext(), "Decline success", Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+
+
+
                             }
                         })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -103,6 +121,8 @@ public class ReceivedRequest extends AppCompatActivity {
                                         Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                 });
+
+
 
                             Log.d("Id", getRef(i).getKey());
                     }
@@ -192,6 +212,8 @@ public class ReceivedRequest extends AppCompatActivity {
         mUsersReference = FirebaseDatabase.getInstance().getReference("Users");
 
         mReceivedPathDatabaseReference = FirebaseDatabase.getInstance().getReference("FriendRequest").child(receivedPath).child(currentUser_ID);
+
+        mSentPathDatabaseReference = FirebaseDatabase.getInstance().getReference("FriendRequest").child(sentPath);
 
 
     }
