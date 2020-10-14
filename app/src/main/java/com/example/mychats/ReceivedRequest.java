@@ -107,7 +107,7 @@ public class ReceivedRequest extends AppCompatActivity {
             public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.view_for_recyclerview_receivedrequest, parent, false);
-                return new ReceivedRequest.Holder(view);
+                return new Holder(view);
             }
 
             @Override
@@ -169,12 +169,10 @@ public class ReceivedRequest extends AppCompatActivity {
         recyclerView.setAdapter(firebaseRecyclerAdapter);
 
 
-
-
     }
 
 
-    class Holder extends RecyclerView.ViewHolder {
+    static class Holder extends RecyclerView.ViewHolder {
 
         View mView;
         public Button accept, decline;
