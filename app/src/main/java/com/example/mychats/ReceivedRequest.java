@@ -46,6 +46,7 @@ public class ReceivedRequest extends AppCompatActivity {
     private DatabaseReference mReceivedPathDatabaseReference, mSentPathDatabaseReference;
     private DatabaseReference mUsersReference;
     private RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -84,10 +85,12 @@ public class ProfileIntroduction extends AppCompatActivity {
                     isFriend = true;
                     Log.d("Found", "Fond");
                     requestButton.setText("Cancel Request");
+                    requestButton.setBackgroundColor( Color.rgb(211,9,9));
                     isReqSent.setText("Request sent successfully");
                 }
                 else {
                     requestButton.setText("Send Request");
+                    requestButton.setBackgroundColor( Color.rgb(85,159,22) );
                     isReqSent.setText("To make Friend Send a Request");
                 }
                 requestButton.setVisibility(View.VISIBLE);
