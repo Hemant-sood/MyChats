@@ -43,9 +43,10 @@ public class ReceivedRequest extends AppCompatActivity {
     private Toolbar toolbar;
     private String currentUser_ID;
     private String receivedPath = "Received", sentPath = "Sent";
-    private DatabaseReference mReceivedPathDatabaseReference, mSentPathDatabaseReference;
+    private DatabaseReference mReceivedPathDatabaseReference, mSentPathDatabaseReference, mFriendLists;
     private DatabaseReference mUsersReference;
     private RecyclerView recyclerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,40 @@ public class ReceivedRequest extends AppCompatActivity {
 
     }
 
+    public void removeFriendsRequest(final View view, final DatabaseReference friend){
+
+
+        mSentPathDatabaseReference.child(friend.getKey()).child(currentUser_ID).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+                friend.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        onStart();
+                        Toast.makeText(view.getContext(), "Decline success", Toast.LENGTH_LONG).show();
+                    }
+                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+
+
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+    }
 
     @Override
     protected void onStart() {
@@ -83,7 +118,10 @@ public class ReceivedRequest extends AppCompatActivity {
                 holder.accept.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(view.getContext(), "Friend Added", Toast.LENGTH_LONG).show();
+
+                    mFriendLists.child(currentUser_ID).child(getRef(i).getKey()).child("Name").setValue(getRef(i).getKey());
+                        removeFriendsRequest(view, getRef(i));
+
                     }
                 });
 
@@ -91,41 +129,9 @@ public class ReceivedRequest extends AppCompatActivity {
                 holder.decline.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View view) {
-                        final DatabaseReference friend = getRef(i);
 
+                        removeFriendsRequest(view, getRef(i));
 
-                        mSentPathDatabaseReference.child(getRef(i).getKey()).child(currentUser_ID).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-
-                                friend.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        onStart();
-                                        Toast.makeText(view.getContext(), "Decline success", Toast.LENGTH_LONG).show();
-                                    }
-                                })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-
-
-
-                            }
-                        })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
-
-
-
-                            Log.d("Id", getRef(i).getKey());
                     }
                 });
 
@@ -207,6 +213,7 @@ public class ReceivedRequest extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerviewForRequest);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
         //get Current logged in user
         currentUser_ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -216,6 +223,7 @@ public class ReceivedRequest extends AppCompatActivity {
 
         mSentPathDatabaseReference = FirebaseDatabase.getInstance().getReference("FriendRequest").child(sentPath);
 
+        mFriendLists = FirebaseDatabase.getInstance().getReference("Friends");
 
     }
 
