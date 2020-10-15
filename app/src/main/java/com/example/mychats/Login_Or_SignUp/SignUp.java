@@ -54,8 +54,6 @@ public class SignUp extends AppCompatActivity {
                 getDataFromEditText();  // get data from input fields
                 if( !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(name) ) {
 
-
-
                     mProgressDialog.setTitle("Sign Up progress..");
                     mProgressDialog.setMessage("One moment please...");
                     mProgressDialog.setCanceledOnTouchOutside(false);

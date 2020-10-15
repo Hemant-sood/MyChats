@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mychats.Chat;
 import com.example.mychats.ProfileIntroduction;
 import com.example.mychats.R;
 import com.example.mychats.ReceivedRequest;
@@ -90,9 +91,18 @@ public class MyNetwork extends Fragment {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull final Holder holder, int i, @NonNull ReceivedRequestModel receivedRequestModel) {
+            protected void onBindViewHolder(@NonNull final Holder holder, final int i, @NonNull ReceivedRequestModel receivedRequestModel) {
 
                 String link = receivedRequestModel.getName();
+
+                holder.chat.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent chat = new Intent(view.getContext(), Chat.class);
+                        chat.putExtra("UserProfileLink", getRef(i).getKey());
+                        startActivity(chat);
+                    }
+                });
 
                 mFriendListReference .child(link) .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
