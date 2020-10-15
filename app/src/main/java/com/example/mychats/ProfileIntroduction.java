@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,10 +34,11 @@ public class ProfileIntroduction extends AppCompatActivity {
     private DatabaseReference mRef;
     private TextView userName, userStatus;
     private CircleImageView userImage;
+    private ImageView friendship;
     private String userProfile_ID;
     private Button requestButton;
     private TextView isReqSent;
-    private DatabaseReference mFriendRequestDatabaseReference;
+    private DatabaseReference mFriendRequestDatabaseReference, mIsFriendShip;
     private String currentUser_ID;
     private String sentPath = "Sent" , receivedPath = "Received" ;
     private boolean  isFriend =  false ;
@@ -76,21 +78,42 @@ public class ProfileIntroduction extends AppCompatActivity {
 
     private void checkIFUserIsAlreadyAFriend() {
 
+        mIsFriendShip.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(  snapshot.hasChild(userProfile_ID)){
+                    requestButton.setVisibility(View.INVISIBLE);
+                    isReqSent.setText("Already a Friend");
+                    friendship.setVisibility(View.VISIBLE);
+                }
+                else{
+                    setTheButtonsPropertyAccordingly();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
+    private void setTheButtonsPropertyAccordingly() {
 
         mFriendRequestDatabaseReference.child(sentPath).child(currentUser_ID).addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if( snapshot.hasChild(userProfile_ID) ) {
+                if (snapshot.hasChild(userProfile_ID)) {
                     isFriend = true;
                     Log.d("Found", "Fond");
                     requestButton.setText("Cancel Request");
-                    requestButton.setBackgroundColor( Color.rgb(211,9,9));
+                    requestButton.setBackgroundColor(Color.rgb(211, 9, 9));
                     isReqSent.setText("Request sent successfully");
-                }
-                else {
+                } else {
                     requestButton.setText("Send Request");
-                    requestButton.setBackgroundColor( Color.rgb(85,159,22) );
+                    requestButton.setBackgroundColor(Color.rgb(85, 159, 22));
                     isReqSent.setText("To make Friend Send a Request");
                 }
                 requestButton.setVisibility(View.VISIBLE);
@@ -101,7 +124,6 @@ public class ProfileIntroduction extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-
 
     }
 
@@ -123,6 +145,8 @@ public class ProfileIntroduction extends AppCompatActivity {
     }
 
     private void getUserDetailsFromRealTimeDatabase() {
+
+
 
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -158,6 +182,8 @@ public class ProfileIntroduction extends AppCompatActivity {
         requestButton = findViewById(R.id.sendFriendRequest);
         requestButton.setVisibility(View.INVISIBLE);
         isReqSent = findViewById(R.id.isRequestSent);
+        friendship = findViewById(R.id.friendship);
+
 
 
 
@@ -166,6 +192,9 @@ public class ProfileIntroduction extends AppCompatActivity {
 
         //To get the current user id who is logged in
         currentUser_ID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // get Reference of Friendship database reference
+        mIsFriendShip = FirebaseDatabase.getInstance().getReference("Friends").child(currentUser_ID);
 
         // get Reference of database reference
         mRef = FirebaseDatabase.getInstance().getReference("Users").child(userProfile_ID);
