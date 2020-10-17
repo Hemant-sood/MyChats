@@ -164,7 +164,7 @@ public class ReceivedRequest extends AppCompatActivity {
 
 
 
-                mUsersReference.child(link).addListenerForSingleValueEvent(new ValueEventListener() {
+                mUsersReference.child(link). addListenerForSingleValueEvent (new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
