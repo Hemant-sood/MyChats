@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.UiAutomation;
 import android.content.Intent;
 import android.graphics.fonts.FontFamily;
@@ -46,6 +47,7 @@ public class ReceivedRequest extends AppCompatActivity {
     private DatabaseReference mReceivedPathDatabaseReference, mSentPathDatabaseReference, mFriendLists;
     private DatabaseReference mUsersReference;
     private RecyclerView recyclerView;
+    private TextView isPendingFriendRequests;
 
 
     @Override
@@ -96,6 +98,30 @@ public class ReceivedRequest extends AppCompatActivity {
         super.onStart();
 
 
+        mReceivedPathDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if( snapshot.hasChildren() ) {
+                    getListsOfFriendsRequests();
+                }
+                else{
+                    isPendingFriendRequests.setText("No Pending friend request.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+    }
+
+    private void getListsOfFriendsRequests() {
+
+
         Query query = mReceivedPathDatabaseReference;
         FirebaseRecyclerOptions<ReceivedRequestModel> options = new FirebaseRecyclerOptions.Builder<ReceivedRequestModel>()
                 .setQuery(query, ReceivedRequestModel.class)
@@ -119,7 +145,8 @@ public class ReceivedRequest extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
 
-                    mFriendLists.child(currentUser_ID).child(getRef(i).getKey()).child("Name").setValue(getRef(i).getKey());
+                        mFriendLists.child(currentUser_ID).child(getRef(i).getKey()).child("Name").setValue(getRef(i).getKey());
+                        mFriendLists.child(getRef(i).getKey()).child(currentUser_ID).child("Name"). setValue(currentUser_ID);
                         removeFriendsRequest(view, getRef(i));
 
                     }
@@ -211,6 +238,8 @@ public class ReceivedRequest extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerviewForRequest);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+        isPendingFriendRequests = findViewById(R.id.pendingFriendRequests);
 
         //get Current logged in user
         currentUser_ID = FirebaseAuth.getInstance().getCurrentUser().getUid();

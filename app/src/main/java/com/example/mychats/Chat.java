@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -42,6 +43,7 @@ public class Chat extends AppCompatActivity {
     private ImageView sendDataButton;
     private String nodeIdForMessage, from_User_ID, to_User_Id ;
     private MediaPlayer sendRingTone;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
