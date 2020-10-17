@@ -4,29 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
+
     tools:context=".ProfileIntroduction">
 
 
     <include
         android:id="@+id/toolbar_profile_introduction"
         layout="@layout/profile_introduction_toolbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+          />
 
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/selectedUserImage"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="16dp"
         android:src="@drawable/profile_pic_default"
-        app:civ_border_width="4dp"
+        android:visibility="visible"
 
+        app:civ_border_width="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_profile_introduction" />
@@ -48,6 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textSize="24sp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/selectedUserName"
         app:layout_constraintStart_toStartOf="@+id/selectedUserName"
         app:layout_constraintTop_toBottomOf="@+id/selectedUserName" />
@@ -56,34 +53,35 @@
         android:id="@+id/sendFriendRequest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:background="@color/colorPrimary"
         android:padding="10dp"
+        android:text="send req"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/selectedUserImage"
         app:layout_constraintStart_toStartOf="@+id/selectedUserImage"
-        app:layout_constraintTop_toBottomOf="@+id/selectedUserStatus" />
+        app:layout_constraintTop_toBottomOf="@+id/isRequestSent" />
 
     <TextView
         android:id="@+id/isRequestSent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        app:layout_constraintBottom_toTopOf="@+id/sendFriendRequest"
-        app:layout_constraintEnd_toEndOf="@+id/sendFriendRequest"
-        app:layout_constraintStart_toStartOf="@+id/sendFriendRequest"
+        android:layout_marginTop="32dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/selectedUserImage"
+        app:layout_constraintStart_toStartOf="@+id/selectedUserImage"
         app:layout_constraintTop_toBottomOf="@+id/selectedUserStatus" />
 
     <ImageView
         android:id="@+id/friendship"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="32dp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="@+id/isRequestSent"
-        app:layout_constraintHorizontal_bias="0.562"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="@+id/isRequestSent"
         app:layout_constraintTop_toBottomOf="@+id/isRequestSent"
         app:srcCompat="@drawable/friendship" />
