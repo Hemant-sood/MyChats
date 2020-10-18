@@ -4,9 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -60,7 +63,6 @@ public class Chat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-
         init();
 
         updateAppBarDetails();
@@ -106,9 +108,39 @@ public class Chat extends AppCompatActivity {
 
         FirebaseRecyclerAdapter<ChatModel, Chat.Holder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ChatModel, Holder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull Holder holder, int i, @NonNull ChatModel chatModel) {
+            protected void onBindViewHolder(@NonNull final Holder holder, final int i, @NonNull final ChatModel chatModel) {
 
-                holder.setText(chatModel.getMessageText());
+
+
+                getRef(i).child("SenderID").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        String senderID =  snapshot.getValue().toString() ;
+
+
+                        if( senderID.equals(from_User_ID) ) {
+                            holder.textView.setBackgroundColor(Color.WHITE);
+                            holder.textView.setTextColor(Color.BLACK);
+
+
+                        }
+                        else{
+                            holder.textView.setBackgroundColor(Color.BLACK);
+                            holder.textView.setTextColor(Color.WHITE);
+                        }
+
+                        holder.setText(chatModel.getMessageText());
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
 
             }
 
@@ -131,14 +163,16 @@ public class Chat extends AppCompatActivity {
     static class Holder extends RecyclerView.ViewHolder {
 
         View mView;
+        private TextView textView ;
+
         public void setText(String name) {
-            TextView textView = mView.findViewById(R.id.messageId);
             textView.setText(name);
         }
 
         public Holder(@NonNull View itemView) {
             super(itemView);
             mView = itemView;
+            textView = mView.findViewById(R.id.messageId);
         }
 
     }
@@ -167,7 +201,7 @@ public class Chat extends AppCompatActivity {
 
 
 
-        mNodeIdForMessageReference.setValue(messageData).addOnCompleteListener(new OnCompleteListener<Void>() {
+        mNodeIdForMessageReference.push().setValue(messageData).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 sendRingTone.release();
@@ -233,7 +267,7 @@ public class Chat extends AppCompatActivity {
         nodeIdForMessage = MakeNodeIDForMessages.setOneToOneChat(from_User_ID, to_User_Id);
 
         //Establishing connection the nodeId
-        mNodeIdForMessageReference = FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage).push();
+        mNodeIdForMessageReference = FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage);
 
     }
 
