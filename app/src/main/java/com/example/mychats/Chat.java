@@ -1,25 +1,21 @@
 package com.example.mychats;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,14 +32,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ThrowOnExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
-import java.time.Instant;
-import java.util.Date;
+ import java.util.Date;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -59,9 +51,12 @@ public class Chat extends AppCompatActivity {
     private String nodeIdForMessage, from_User_ID, to_User_Id ;
     private MediaPlayer sendRingTone;
     private RecyclerView recyclerView;
+
+    private FirebaseRecyclerAdapter<ChatModel, Chat.Holder> firebaseRecyclerAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private static int limitMessageInOnePage = 20;
     private static int pageCount = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,11 +109,12 @@ public class Chat extends AppCompatActivity {
     private void getAllMessages(int factor) {
 
         Query query = FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage).limitToLast( factor * limitMessageInOnePage ) ;
+
         FirebaseRecyclerOptions<ChatModel> options = new FirebaseRecyclerOptions.Builder<ChatModel>()
                 .setQuery(query, ChatModel.class)
                 .build();
 
-        FirebaseRecyclerAdapter<ChatModel, Chat.Holder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ChatModel, Holder>(options) {
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ChatModel, Holder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final Holder holder, final int i, @NonNull final ChatModel chatModel) {
 
@@ -132,16 +128,25 @@ public class Chat extends AppCompatActivity {
 
 
                         if( senderID.equals(from_User_ID) ) {
-                            holder.textView.setBackgroundColor(Color.WHITE);
-                            holder.textView.setTextColor(Color.BLACK);
 
+                            holder.timestamp.setBackgroundColor(Color.WHITE);
+                            holder.timestamp.setTextColor(Color.BLACK);
+
+                            holder.message.setBackgroundColor(Color.WHITE);
+                            holder.message.setTextColor(Color.BLACK);
 
                         }
                         else{
-                            holder.textView.setBackgroundColor(Color.BLACK);
-                            holder.textView.setTextColor(Color.WHITE);
+
+                            holder.timestamp.setBackgroundColor(Color.BLACK);
+                            holder.timestamp.setTextColor(Color.WHITE);
+
+
+                            holder.message.setBackgroundColor(Color.BLACK);
+                            holder.message.setTextColor(Color.WHITE);
                         }
 
+                        holder.setTime(chatModel.getTimestamp());
                         holder.setText(chatModel.getMessageText());
 
                     }
@@ -166,6 +171,7 @@ public class Chat extends AppCompatActivity {
 
         firebaseRecyclerAdapter.startListening();
 
+
         recyclerView.setAdapter(firebaseRecyclerAdapter);
 
         mSwipeRefreshLayout.setRefreshing(false);
@@ -176,16 +182,23 @@ public class Chat extends AppCompatActivity {
     static class Holder extends RecyclerView.ViewHolder {
 
         View mView;
-        private TextView textView ;
+        private TextView message, timestamp ;
 
         public void setText(String name) {
-            textView.setText(name);
+            message.setText(name);
+        }
+
+        public void setTime(long time) {
+            Date date = new Date(time);
+            String s = ""+date.getHours() +":"+date.getMinutes();
+            timestamp.setText(s);
         }
 
         public Holder(@NonNull View itemView) {
             super(itemView);
             mView = itemView;
-            textView = mView.findViewById(R.id.messageId);
+            message = mView.findViewById(R.id.messageId);
+            timestamp = mView.findViewById(R.id.timestamp);
         }
 
     }
@@ -217,17 +230,22 @@ public class Chat extends AppCompatActivity {
         mNodeIdForMessageReference.push().setValue(messageData).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                sendRingTone.release();
-                sendRingTone = null;
+                if(sendRingTone != null) {
+                    sendRingTone.release();
+                    sendRingTone = null;
+                }
+                Log.d("count", ""+firebaseRecyclerAdapter.getItemCount());
+                //firebaseRecyclerAdapter.notifyDataSetChanged();
+                 recyclerView.scrollToPosition(firebaseRecyclerAdapter.getItemCount()-1);
             }
         });
 
 
     }
 
+
+
     private void updateAppBarDetails() {
-
-
 
         mUserWhomToChatDatabaseRef.child(to_User_Id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -250,6 +268,9 @@ public class Chat extends AppCompatActivity {
 
     }
 
+
+
+
     private void init() {
 
         toolbar = findViewById(R.id.toolbar_chat);
@@ -263,6 +284,7 @@ public class Chat extends AppCompatActivity {
         sendDataButton = findViewById(R.id.sendImageButton);
 
         mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+
 
         //For RecyclerView
         recyclerView = findViewById(R.id.recyclerview_for_chat);
