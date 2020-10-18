@@ -1,6 +1,7 @@
 package com.example.mychats;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -10,9 +11,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +54,6 @@ public class Chat extends AppCompatActivity {
     private String nodeIdForMessage, from_User_ID, to_User_Id ;
     private MediaPlayer sendRingTone;
     private RecyclerView recyclerView;
-
     private FirebaseRecyclerAdapter<ChatModel, Chat.Holder> firebaseRecyclerAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private static int limitMessageInOnePage = 20;
@@ -121,28 +123,36 @@ public class Chat extends AppCompatActivity {
 
 
                 getRef(i).child("SenderID").addValueEventListener(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         String senderID =  snapshot.getValue().toString() ;
 
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
                         if( senderID.equals(from_User_ID) ) {
 
-                            holder.timestamp.setBackgroundColor(Color.WHITE);
-                            holder.timestamp.setTextColor(Color.BLACK);
+                            params.gravity = Gravity.END;
 
-                            holder.message.setBackgroundColor(Color.WHITE);
+                            params.setMarginEnd(40);
+                            holder.cardView.setLayoutParams(params);
+
+                            holder.cardView.setBackgroundColor(Color.WHITE);
+
+                            holder.timestamp.setTextColor(Color.BLACK);
                             holder.message.setTextColor(Color.BLACK);
 
                         }
                         else{
 
-                            holder.timestamp.setBackgroundColor(Color.BLACK);
+                            params.gravity = Gravity.START;
+                            params.setMarginStart(40);
+                            holder.cardView.setLayoutParams(params);
+
+                            holder.cardView.setBackgroundColor(Color.BLACK);
+
                             holder.timestamp.setTextColor(Color.WHITE);
-
-
-                            holder.message.setBackgroundColor(Color.BLACK);
                             holder.message.setTextColor(Color.WHITE);
                         }
 
@@ -183,6 +193,7 @@ public class Chat extends AppCompatActivity {
 
         View mView;
         private TextView message, timestamp ;
+        private CardView cardView;
 
         public void setText(String name) {
             message.setText(name);
@@ -199,6 +210,8 @@ public class Chat extends AppCompatActivity {
             mView = itemView;
             message = mView.findViewById(R.id.messageId);
             timestamp = mView.findViewById(R.id.timestamp);
+            cardView = mView.findViewById(R.id.cardViewForMessageItem);
+
         }
 
     }
@@ -284,7 +297,6 @@ public class Chat extends AppCompatActivity {
         sendDataButton = findViewById(R.id.sendImageButton);
 
         mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-
 
         //For RecyclerView
         recyclerView = findViewById(R.id.recyclerview_for_chat);
