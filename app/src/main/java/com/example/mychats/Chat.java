@@ -8,6 +8,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +59,9 @@ public class Chat extends AppCompatActivity {
     private String nodeIdForMessage, from_User_ID, to_User_Id ;
     private MediaPlayer sendRingTone;
     private RecyclerView recyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private static int limitMessageInOnePage = 20;
+    private static int pageCount = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,13 @@ public class Chat extends AppCompatActivity {
         init();
 
         updateAppBarDetails();
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getAllMessages(pageCount++);
+            }
+        });
 
         sendDataButton.setOnClickListener(new View.OnClickListener() {
 
@@ -86,7 +98,7 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if( snapshot.hasChild(nodeIdForMessage) ) {
-                    getAllMessages();
+                    getAllMessages(1);
                 }
             }
 
@@ -99,9 +111,9 @@ public class Chat extends AppCompatActivity {
 
     }
 
-    private void getAllMessages() {
+    private void getAllMessages(int factor) {
 
-        Query query = FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage);
+        Query query = FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage).limitToLast( factor * limitMessageInOnePage ) ;
         FirebaseRecyclerOptions<ChatModel> options = new FirebaseRecyclerOptions.Builder<ChatModel>()
                 .setQuery(query, ChatModel.class)
                 .build();
@@ -156,6 +168,7 @@ public class Chat extends AppCompatActivity {
 
         recyclerView.setAdapter(firebaseRecyclerAdapter);
 
+        mSwipeRefreshLayout.setRefreshing(false);
 
     }
 
@@ -249,9 +262,14 @@ public class Chat extends AppCompatActivity {
         sendDataText = findViewById(R.id.sendTextData);
         sendDataButton = findViewById(R.id.sendImageButton);
 
+        mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+
         //For RecyclerView
         recyclerView = findViewById(R.id.recyclerview_for_chat);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
 
         //Get the userId to whom we want to send the messages using previous activity through Intent
         to_User_Id = getIntent().getStringExtra("UserProfileLink");
