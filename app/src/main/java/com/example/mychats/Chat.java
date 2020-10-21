@@ -1,6 +1,7 @@
 package com.example.mychats;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,11 +26,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mychats.Adapters.ChatSendAndReceiverAdapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,8 +41,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
- import java.util.Date;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -56,8 +61,9 @@ public class Chat extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter<ChatModel, Chat.Holder> firebaseRecyclerAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private static int limitMessageInOnePage = 20;
-    private static int pageCount = 2;
+
+    private ChatSendAndReceiverAdapter mChatSendAndReceiverAdapter;
+    List<ChatModel> list;
 
 
     @Override
@@ -72,7 +78,7 @@ public class Chat extends AppCompatActivity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getAllMessages(pageCount++);
+                loadMessages();
             }
         });
 
@@ -95,7 +101,7 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if( snapshot.hasChild(nodeIdForMessage) ) {
-                    getAllMessages(1);
+                    loadMessages();
                 }
             }
 
@@ -108,81 +114,43 @@ public class Chat extends AppCompatActivity {
 
     }
 
-    private void getAllMessages(int factor) {
+    private void loadMessages() {
 
-        Query query = FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage).limitToLast( factor * limitMessageInOnePage ) ;
 
-        FirebaseRecyclerOptions<ChatModel> options = new FirebaseRecyclerOptions.Builder<ChatModel>()
-                .setQuery(query, ChatModel.class)
-                .build();
-
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ChatModel, Holder>(options) {
+        FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage).addChildEventListener(new ChildEventListener() {
             @Override
-            protected void onBindViewHolder(@NonNull final Holder holder, final int i, @NonNull final ChatModel chatModel) {
-
-
-
-                getRef(i).child("SenderID").addValueEventListener(new ValueEventListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        String senderID =  snapshot.getValue().toString() ;
-
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-                        if( senderID.equals(from_User_ID) ) {
-
-                            params.gravity = Gravity.END;
-
-                            params.setMarginEnd(40);
-                            holder.cardView.setLayoutParams(params);
-
-                            holder.cardView.setBackgroundColor(Color.WHITE);
-
-                            holder.timestamp.setTextColor(Color.BLACK);
-                            holder.message.setTextColor(Color.BLACK);
-
-                        }
-                        else{
-
-                            params.gravity = Gravity.START;
-                            params.setMarginStart(40);
-                            holder.cardView.setLayoutParams(params);
-
-                            holder.cardView.setBackgroundColor(Color.BLACK);
-
-                            holder.timestamp.setTextColor(Color.WHITE);
-                            holder.message.setTextColor(Color.WHITE);
-                        }
-
-                        holder.setTime(chatModel.getTimestamp());
-                        holder.setText(chatModel.getMessageText());
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                ChatModel chatModel = snapshot.getValue(ChatModel.class);
+                list.add(chatModel);
+                mChatSendAndReceiverAdapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(list.size()-1);
+                Log.d("COunt", mChatSendAndReceiverAdapter.getItemCount()+"");
 
 
             }
 
-            @NonNull
             @Override
-            public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_for_recyclerview_message_item, parent, false);
-                return new Holder(view);
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
             }
-        };
 
-        firebaseRecyclerAdapter.startListening();
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
 
-        recyclerView.setAdapter(firebaseRecyclerAdapter);
 
         mSwipeRefreshLayout.setRefreshing(false);
 
@@ -247,9 +215,10 @@ public class Chat extends AppCompatActivity {
                     sendRingTone.release();
                     sendRingTone = null;
                 }
-                Log.d("count", ""+firebaseRecyclerAdapter.getItemCount());
-                //firebaseRecyclerAdapter.notifyDataSetChanged();
-                 recyclerView.scrollToPosition(firebaseRecyclerAdapter.getItemCount()-1);
+
+                mChatSendAndReceiverAdapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(list.size()-1);
+
             }
         });
 
@@ -298,11 +267,7 @@ public class Chat extends AppCompatActivity {
 
         mSwipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
-        //For RecyclerView
-        recyclerView = findViewById(R.id.recyclerview_for_chat);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
+
 
 
         //Get the userId to whom we want to send the messages using previous activity through Intent
@@ -314,12 +279,26 @@ public class Chat extends AppCompatActivity {
         //Set Reference to whom we want to chat
         mUserWhomToChatDatabaseRef = FirebaseDatabase.getInstance().getReference("Users");
 
-
         //Establishing the nodeId for one to one chat
         nodeIdForMessage = MakeNodeIDForMessages.setOneToOneChat(from_User_ID, to_User_Id);
 
         //Establishing connection the nodeId
         mNodeIdForMessageReference = FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage);
+
+
+        //For RecyclerView
+        recyclerView = findViewById(R.id.recyclerview_for_chat);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        list = new ArrayList<>();
+        mChatSendAndReceiverAdapter = new ChatSendAndReceiverAdapter(getApplicationContext(), list, from_User_ID);
+        recyclerView.setAdapter(mChatSendAndReceiverAdapter);
+
+
+
+
+
 
     }
 

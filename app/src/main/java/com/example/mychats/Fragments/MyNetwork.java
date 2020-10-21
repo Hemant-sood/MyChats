@@ -1,9 +1,11 @@
 package com.example.mychats.Fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mychats.Chat;
+import com.example.mychats.MakeNodeIDForMessages;
 import com.example.mychats.ProfileIntroduction;
 import com.example.mychats.R;
 import com.example.mychats.ReceivedRequest;
@@ -144,6 +147,7 @@ public class MyNetwork extends Fragment {
             super(itemView);
             mView = itemView;
             chat = mView.findViewById(R.id.friendChatButton);
+
 
         }
 

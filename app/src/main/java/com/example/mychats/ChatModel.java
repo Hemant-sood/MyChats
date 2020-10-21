@@ -2,7 +2,7 @@ package com.example.mychats;
 
 public class ChatModel {
 
-    private String ReceiverId, SenderId, messageText;
+    private String ReceiverId, SenderID, messageText;
     private long Timestamp;
 
     public ChatModel() {
@@ -11,7 +11,7 @@ public class ChatModel {
 
     public ChatModel(String receiverId, String senderId, String messageText, long timestamp) {
         ReceiverId = receiverId;
-        SenderId = senderId;
+        SenderID = senderId;
         this.messageText = messageText;
         Timestamp = timestamp;
     }
@@ -25,11 +25,11 @@ public class ChatModel {
     }
 
     public String getSenderId() {
-        return SenderId;
+        return SenderID;
     }
 
     public void setSenderId(String senderId) {
-        SenderId = senderId;
+        SenderID = senderId;
     }
 
     public String getMessageText() {

@@ -19,5 +19,7 @@
     <string name="received_friend_request">All Received Friend Requests</string>
     <string name="pending_friend_requests">Pending Friend Requests</string>
     <string name="this_is_demo_message">this is demo message</string>
+    <string name="unfriend">UnFriend</string>
+    <string name="un_friend">Un-Friend</string>
 
 </resources>
