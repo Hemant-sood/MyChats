@@ -124,7 +124,6 @@ public class Chat extends AppCompatActivity {
                 list.add(chatModel);
                 mChatSendAndReceiverAdapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(list.size()-1);
-                Log.d("COunt", mChatSendAndReceiverAdapter.getItemCount()+"");
 
 
             }

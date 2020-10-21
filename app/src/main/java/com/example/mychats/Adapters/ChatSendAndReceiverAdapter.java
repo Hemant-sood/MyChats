@@ -53,20 +53,18 @@ public class ChatSendAndReceiverAdapter extends RecyclerView.Adapter<ChatSendAnd
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
 
+
         if( sender_ID.equals(currentUser_ID) ) {
 
             params.gravity = Gravity.END;
             params.setMarginEnd(40);
 
-            holder.cardView.setLayoutParams(params);
-            holder.cardView.setBackgroundColor(Color.WHITE);
+            holder.linearLayoutForMessageItem.setLayoutParams(params);
+            holder.linearLayoutForBackgroundColor.setBackgroundColor(Color.WHITE);
 
 
             holder.timestamp.setTextColor(Color.BLACK);
             holder.message.setTextColor(Color.BLACK);
-
-            holder.timestamp.setBackgroundColor(Color.WHITE);
-            holder.message.setBackgroundColor(Color.WHITE);
 
         }
         else {
@@ -74,22 +72,18 @@ public class ChatSendAndReceiverAdapter extends RecyclerView.Adapter<ChatSendAnd
             params.gravity = Gravity.START;
             params.setMarginStart(40);
 
-            holder.cardView.setLayoutParams(params);
-            holder.cardView.setBackgroundColor(Color.BLACK);
+            holder.linearLayoutForMessageItem.setLayoutParams(params);
+            holder.linearLayoutForBackgroundColor.setBackgroundColor(Color.BLACK);
+
 
             holder.timestamp.setTextColor(Color.WHITE);
             holder.message.setTextColor(Color.WHITE);
 
-            holder.timestamp.setBackgroundColor(Color.BLACK);
-            holder.message.setBackgroundColor(Color.BLACK);
 
         }
 
         holder.setText(chatModel.getMessageText());
         holder.setTime(chatModel.getTimestamp());
-
-
-
 
     }
 
@@ -103,8 +97,8 @@ public class ChatSendAndReceiverAdapter extends RecyclerView.Adapter<ChatSendAnd
     class Holder extends RecyclerView.ViewHolder {
 
         private TextView message, timestamp ;
-        private CardView cardView;
-
+        private LinearLayout linearLayoutForMessageItem;
+        private LinearLayout linearLayoutForBackgroundColor;
 
         public void setText(String name) {
             message.setText(name);
@@ -120,7 +114,8 @@ public class ChatSendAndReceiverAdapter extends RecyclerView.Adapter<ChatSendAnd
             super(itemView);
             message = itemView.findViewById(R.id.messageId);
             timestamp = itemView.findViewById(R.id.timestamp);
-            cardView = itemView.findViewById(R.id.cardViewForMessageItem);
+            linearLayoutForBackgroundColor = itemView.findViewById(R.id.backgroundForSenderAndReceiver);
+            linearLayoutForMessageItem = itemView.findViewById(R.id.linearLayoutForMessageItem);
 
         }
     }
