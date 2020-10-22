@@ -3,7 +3,6 @@ package com.example.mychats.Adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +12,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.mychats.ChatModel;
+import com.example.mychats.ModelClasses.ChatModel;
 import com.example.mychats.R;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Date;
 import java.util.List;

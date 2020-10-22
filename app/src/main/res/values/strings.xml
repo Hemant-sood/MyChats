@@ -21,5 +21,6 @@
     <string name="this_is_demo_message">this is demo message</string>
     <string name="unfriend">UnFriend</string>
     <string name="un_friend">Un-Friend</string>
+    <string name="go_for_chat">Go for Chat</string>
 
 </resources>

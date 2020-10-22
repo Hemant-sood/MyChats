@@ -1,4 +1,4 @@
-package com.example.mychats;
+package com.example.mychats.ModelClasses;
 
 public class UserModel {
 

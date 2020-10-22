@@ -2,7 +2,6 @@ package com.example.mychats;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -10,25 +9,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mychats.Adapters.ChatSendAndReceiverAdapter;
+import com.example.mychats.ModelClasses.ChatModel;
+import com.example.mychats.ModelClasses.UserModel;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,7 +30,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -125,7 +117,6 @@ public class Chat extends AppCompatActivity {
                 mChatSendAndReceiverAdapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(list.size()-1);
 
-
             }
 
             @Override
@@ -202,7 +193,7 @@ public class Chat extends AppCompatActivity {
         messageData.put("SenderID", from_User_ID);
         messageData.put("ReceiverId", to_User_Id);
 
-        long millis = new Date().getTime();
+        final long millis = new Date().getTime();
         messageData.put("Timestamp", millis);
 
 
@@ -217,6 +208,12 @@ public class Chat extends AppCompatActivity {
 
                 mChatSendAndReceiverAdapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(list.size()-1);
+
+
+                HashMap recentUserChat = new HashMap();
+                recentUserChat.put("time", millis);
+
+                FirebaseDatabase.getInstance().getReference("RecentUsersChat").child(from_User_ID).child(to_User_Id).setValue(recentUserChat);
 
             }
         });
