@@ -42,12 +42,12 @@ public class MyChats extends Fragment {
     private RecyclerView mRecyclerView;
     private RecentChatUsersAdapter mRecentChatUsersAdapter;
     private List<String> listOfUsersLink;
-    private Map<String , Integer> map;
     private String currentUser_Id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_my_chats, container, false);
 
@@ -56,11 +56,6 @@ public class MyChats extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getRecentUsers();
-    }
 
     private void getRecentUsers() {
 
@@ -96,8 +91,6 @@ public class MyChats extends Fragment {
             }
         });
 
-
-
     }
 
     private void init() {
@@ -110,7 +103,6 @@ public class MyChats extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
-        //map = new HashMap<>();
 
         getRecentUsers();
 

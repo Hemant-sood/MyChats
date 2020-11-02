@@ -12,6 +12,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -53,6 +55,7 @@ public class Chat extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FirebaseRecyclerAdapter<ChatModel, Chat.Holder> firebaseRecyclerAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private DatabaseReference checkForNewMessageAdded;
 
     private ChatSendAndReceiverAdapter mChatSendAndReceiverAdapter;
     List<ChatModel> list;
@@ -66,6 +69,8 @@ public class Chat extends AppCompatActivity {
         init();
 
         updateAppBarDetails();
+
+        checkForNewMessage();
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -82,6 +87,34 @@ public class Chat extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void checkForNewMessage() {
+
+        final long[] firstTime = {0};
+
+        FirebaseDatabase.getInstance().getReference("Chats").child(nodeIdForMessage).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                if( firstTime[0] > 0 && firstTime[0] < snapshot.getChildrenCount() ) {
+
+                    Log.d("Hey", snapshot.getChildrenCount() + "");
+                    sendRingTone = MediaPlayer.create(getApplicationContext(), R.raw.notification);
+
+                    if( !sendRingTone.isPlaying() ) {
+                        sendRingTone.start();
+                    }
+
+                }
+                firstTime[0] = snapshot.getChildrenCount();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 
@@ -183,10 +216,6 @@ public class Chat extends AppCompatActivity {
 
         if(  TextUtils.isEmpty(message) ) return;
 
-        sendRingTone = MediaPlayer.create(getApplicationContext(), R.raw.notification);
-        sendRingTone.start();
-
-
         HashMap messageData = new HashMap();
 
         messageData.put("messageText", message);
@@ -201,10 +230,6 @@ public class Chat extends AppCompatActivity {
         mNodeIdForMessageReference.push().setValue(messageData).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(sendRingTone != null) {
-                    sendRingTone.release();
-                    sendRingTone = null;
-                }
 
                 mChatSendAndReceiverAdapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(list.size()-1);
